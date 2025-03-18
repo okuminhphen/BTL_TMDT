@@ -30,15 +30,19 @@ const initApiRouter = (app) => {
     //cart route
     router.get("/cart/read/:userId", cartController.readFunc);
     router.post("/cart/add", verifyToken, cartController.addFunc);
-
+    router.put("/cart/update", verifyToken, cartController.updateFunc);
+    router.delete(
+        "/cart/delete/:cartProductSizeId",
+        verifyToken,
+        cartController.deleteFunc
+    );
+    //upload route
     router.post(
         "/upload/images",
         verifyToken,
         upload.array("images", 5),
         uploadController.uploadFunc
     );
-
-    // Route bảo vệ - cần xác thực token
 
     return app.use("/api/v1/", router);
 };

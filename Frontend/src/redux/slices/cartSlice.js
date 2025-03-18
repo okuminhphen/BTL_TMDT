@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addItemToCart, getCart } from "../../service/cartService";
+import {
+  addItemToCart,
+  getCart,
+  updateItemInCart,
+  deleteItemInCart,
+} from "../../service/cartService";
 
 // Async action để lấy giỏ hàng từ API
 // Lấy giỏ hàng từ API
@@ -8,11 +13,11 @@ export const fetchCart = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const userId = getState().user.currentUser?.userId;
-      console.log(userId);
+
       let response = await getCart(userId);
-      console.log(response.data);
-      if (response?.data?.EC === 0 && Array.isArray(response.data.DT.DT)) {
-        return response.data.DT.DT; // Lấy đúng mảng sản phẩm
+
+      if (response?.data?.EC === 0 && Array.isArray(response.data.DT)) {
+        return response.data.DT; // Lấy đúng mảng sản phẩm
       } else {
         return rejectWithValue("Dữ liệu giỏ hàng không hợp lệ!");
       }
@@ -48,16 +53,16 @@ export const updateCartItemQuantityAsync = createAsyncThunk(
   "cart/updateQuantity",
   async ({ cartProductSizeId, quantity }, { rejectWithValue, dispatch }) => {
     try {
-      // let response = await updateCartItemQuantity({
-      //   cartProductSizeId,
-      //   quantity,
-      // });
-      // if (!response || !response.data || response.data.EC !== 0) {
-      //   throw new Error(response.data?.EM || "Cập nhật số lượng thất bại!");
-      // }
+      let response = await updateItemInCart({
+        cartProductSizeId,
+        quantity,
+      });
+      if (!response || !response.data || response.data.EC !== 0) {
+        throw new Error(response.data?.EM || "Cập nhật số lượng thất bại!");
+      }
 
-      // // Sau khi cập nhật thành công, lấy lại giỏ hàng
-      // dispatch(fetchCart());
+      // Sau khi cập nhật thành công, lấy lại giỏ hàng
+      dispatch(fetchCart());
       return { cartProductSizeId, quantity };
     } catch (error) {
       return rejectWithValue("Lỗi khi cập nhật số lượng!");
@@ -70,13 +75,13 @@ export const removeCartItemAsync = createAsyncThunk(
   "cart/removeCartItem",
   async (cartProductSizeId, { rejectWithValue, dispatch }) => {
     try {
-      // let response = await removeCartItem(cartProductSizeId);
-      // if (!response || !response.data || response.data.EC !== 0) {
-      //   throw new Error(response.data?.EM || "Xóa sản phẩm thất bại!");
-      // }
-      // // Sau khi xóa thành công, lấy lại giỏ hàng
-      // dispatch(fetchCart());
-      // return cartProductSizeId;
+      let response = await deleteItemInCart(cartProductSizeId);
+      if (!response || !response.data || response.data.EC !== 0) {
+        throw new Error(response.data?.EM || "Xóa sản phẩm thất bại!");
+      }
+      // Sau khi xóa thành công, lấy lại giỏ hàng
+      dispatch(fetchCart());
+      return cartProductSizeId;
     } catch (error) {
       return rejectWithValue("Lỗi khi xóa sản phẩm khỏi giỏ hàng!");
     }
@@ -102,8 +107,6 @@ const cartSlice = createSlice({
     builder
       // Xử lý khi lấy giỏ hàng thành công
       .addCase(fetchCart.fulfilled, (state, action) => {
-        console.log("Dữ liệu giỏ hàng từ API:", action.payload);
-
         const cartData = action.payload || []; // Đảm bảo cartData luôn là mảng
 
         state.cartItems = cartData.map((item) => ({

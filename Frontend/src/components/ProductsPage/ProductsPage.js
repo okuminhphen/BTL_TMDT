@@ -15,6 +15,7 @@ const ProductList = () => {
     if (status === "idle") {
       dispatch(fetchProducts());
     }
+    console.log(products);
   }, [status, dispatch]);
 
   const filteredProducts = selectedCategory

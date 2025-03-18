@@ -6,5 +6,10 @@ const getCart = (userId) => {
 const addItemToCart = (cartItem) => {
   return axios.post("/cart/add", cartItem);
 };
-
-export { getCart, addItemToCart };
+const updateItemInCart = (cartItem) => {
+  return axios.put("/cart/update", cartItem);
+};
+const deleteItemInCart = (cartProductSizeId) => {
+  return axios.delete(`/cart/delete/${cartProductSizeId}`);
+};
+export { getCart, addItemToCart, updateItemInCart, deleteItemInCart };

@@ -17,12 +17,14 @@ const AppRoutes = (props) => {
         {/* </Route> */}
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/about" element={<div>about</div>} />
+        <Route path="/contact" element={<div>contact</div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/cart" element={<Cart />} />
+          <Route path="/order" element={<>order</>} />
         </Route>
 
         <Route path="*" element={<div>404 not found</div>} />

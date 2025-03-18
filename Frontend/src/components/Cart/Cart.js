@@ -8,8 +8,15 @@ import {
   Form,
   Badge,
   Alert,
+  InputGroup,
 } from "react-bootstrap";
-import { FaTrash, FaShoppingCart, FaCreditCard } from "react-icons/fa";
+import {
+  FaTrash,
+  FaShoppingCart,
+  FaCreditCard,
+  FaMinus,
+  FaPlus,
+} from "react-icons/fa";
 import {
   fetchCart,
   updateCartItemQuantityAsync,
@@ -30,11 +37,19 @@ const Cart = () => {
     dispatch(
       updateCartItemQuantityAsync({
         cartProductSizeId,
-        quantity: parseInt(quantity),
+        quantity: quantity,
       })
     );
   };
+  const handleIncreaseQuantity = (item) => {
+    handleUpdateQuantity(item.id, item.quantity + 1);
+  };
 
+  const handleDecreaseQuantity = (item) => {
+    if (item.quantity > 1) {
+      handleUpdateQuantity(item.id, item.quantity - 1);
+    }
+  };
   const handleRemoveItem = (cartProductSizeId) => {
     dispatch(removeCartItemAsync(cartProductSizeId));
   };
@@ -133,20 +148,56 @@ const Cart = () => {
                         </Col>
 
                         <Col xs={6} md={2} className="text-md-center">
-                          <div className="text-muted small">Số lượng</div>
-                          <Form.Control
-                            type="number"
-                            value={item.quantity}
-                            min="1"
-                            onChange={(e) =>
-                              handleUpdateQuantity(
-                                item.cartProductSizeId,
-                                e.target.value
-                              )
-                            }
-                            style={{ maxWidth: "100px", margin: "0 auto" }}
-                            className="border-primary"
-                          />
+                          <div className="text-muted small mb-2">Số lượng</div>
+                          <div className="d-flex justify-content-center align-items-center">
+                            <InputGroup style={{ maxWidth: "140px" }}>
+                              <Button
+                                variant="outline-secondary"
+                                onClick={() => handleDecreaseQuantity(item)}
+                                disabled={item.quantity <= 1}
+                                className="d-flex align-items-center justify-content-center"
+                                style={{ width: "40px" }}
+                              >
+                                <FaMinus size={12} />
+                              </Button>
+
+                              <Form.Control
+                                type="number"
+                                value={item.quantity}
+                                min="1"
+                                onChange={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  if (value > 0) {
+                                    handleUpdateQuantity(item.id, value); // Đảm bảo item.id đúng
+                                  }
+                                }}
+                                onBlur={(e) => {
+                                  const value = parseInt(e.target.value);
+                                  if (value > 0) {
+                                    handleUpdateQuantity(item.id, value);
+                                  }
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    const value = parseInt(e.target.value);
+                                    if (value > 0) {
+                                      handleUpdateQuantity(item.id, value);
+                                    }
+                                  }
+                                }}
+                                className="text-center"
+                                style={{ flex: "0 0 60px" }}
+                              />
+                              <Button
+                                variant="outline-secondary"
+                                onClick={() => handleIncreaseQuantity(item)}
+                                className="d-flex align-items-center justify-content-center"
+                                style={{ width: "40px" }}
+                              >
+                                <FaPlus size={12} />
+                              </Button>
+                            </InputGroup>
+                          </div>
                         </Col>
 
                         <Col
@@ -163,9 +214,7 @@ const Cart = () => {
                         <Col xs={6} md={1} className="mt-3 mt-md-0 text-end">
                           <Button
                             variant="outline-danger"
-                            onClick={() =>
-                              handleRemoveItem(item.cartProductSizeId)
-                            }
+                            onClick={() => handleRemoveItem(item.id)}
                             className="rounded-circle p-2"
                           >
                             <FaTrash />

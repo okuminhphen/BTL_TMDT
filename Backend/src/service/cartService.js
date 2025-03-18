@@ -7,7 +7,7 @@ const getUserCartById = async (userId) => {
         if (!user) {
             return { EC: 1, EM: "Không tìm thấy người dùng!", DT: [] };
         }
-        console.log("debug hẻe");
+
         // Tìm hoặc tạo giỏ hàng cho người dùng
         let [cart] = await db.Cart.findOrCreate({
             where: { userId: userId },
@@ -101,7 +101,7 @@ const getUserCartById = async (userId) => {
 const addProductToCart = async (cartItem) => {
     try {
         let { id: productId, userId, sizeId, quantity } = cartItem;
-        console.log("check cartItem: ", productId, userId, sizeId, quantity);
+
         if (!userId || !productId || !sizeId || !quantity) {
             return { EC: 1, EM: "Thiếu thông tin sản phẩm!", DT: [] };
         }
@@ -149,7 +149,7 @@ const addProductToCart = async (cartItem) => {
                 productSizeId: 62,
             },
         });
-        console.log("check cartItemRecord: ", cartItemRecord);
+
         if (cartItemRecord) {
             // Nếu đã có, cập nhật số lượng
             await cartItemRecord.update({
@@ -174,4 +174,45 @@ const addProductToCart = async (cartItem) => {
     }
 };
 
-module.exports = { getUserCartById, addProductToCart };
+const updateProductInCart = async (cartItem) => {
+    try {
+        let data = await db.CartProductSize.update(
+            { quantity: cartItem.quantity },
+            { where: { id: cartItem.cartProductSizeId } }
+        );
+        console.log("check data: ", data);
+        if (data) {
+            return { EC: 0, EM: "Cập nhật số lượng thành công!", DT: data };
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "error from service", // error message
+            EC: "-1", //error code
+            DT: "", // Date
+        };
+    }
+};
+const deleteProductInCart = async (cartProductSizeId) => {
+    try {
+        let data = await db.CartProductSize.destroy({
+            where: { id: cartProductSizeId },
+        });
+        if (data) {
+            return { EC: 0, EM: "Xóa sản phẩm thành công!", DT: data };
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "error from service", // error message
+            EC: "-1", //error code
+            DT: "", // Date
+        };
+    }
+};
+module.exports = {
+    getUserCartById,
+    addProductToCart,
+    updateProductInCart,
+    deleteProductInCart,
+};
