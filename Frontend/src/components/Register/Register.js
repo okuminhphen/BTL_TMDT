@@ -9,10 +9,14 @@ import {
   FaUserPlus,
   FaEnvelope,
   FaPhone,
+  FaShoppingBag,
+  FaTshirt,
+  FaBed,
 } from "react-icons/fa";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -57,27 +61,35 @@ const Register = () => {
   const handleRegister = async () => {
     let check = isValidInputs();
     if (check) {
-      let response = await registerNewUser(email, phone, username, password);
-      let serverData = response.data;
-      if (+serverData.EC === 0) {
-        toast.success(serverData.EM);
-        navigate("/login");
-      } else {
-        toast.error(serverData.EM);
+      setIsRegistering(true);
+      try {
+        let response = await registerNewUser(email, phone, username, password);
+        let serverData = response.data;
+        if (+serverData.EC === 0) {
+          toast.success(serverData.EM);
+          navigate("/login");
+        } else {
+          toast.error(serverData.EM);
+        }
+      } catch (error) {
+        toast.error("An error occurred");
+      } finally {
+        setIsRegistering(false);
       }
     }
   };
 
   return (
-    <div className="register-container py-5">
+    <div className="register-container py-4">
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-md-10">
-            <div className="card border-0 shadow-lg">
+          <div className="col-md-9">
+            <div className="card border-0 shadow">
               <div className="row g-0">
-                <div className="col-md-6 d-none d-md-block">
+                {/* Banner section - smaller width */}
+                <div className="col-md-5 d-none d-md-block">
                   <div
-                    className="h-100 text-white d-flex flex-column justify-content-center p-5 rounded-start"
+                    className="h-100 text-white d-flex flex-column justify-content-center p-4 rounded-start"
                     style={{
                       background:
                         "linear-gradient(135deg, #8A2387 0%, #E94057 50%, #F27121 100%)",
@@ -85,110 +97,230 @@ const Register = () => {
                       overflow: "hidden",
                     }}
                   >
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        opacity: 0.15,
+                        backgroundImage:
+                          "url('https://images.unsplash.com/photo-1595461135849-c08a9a4967b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1868&q=80')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    ></div>
                     <div className="position-relative">
-                      <h1 className="display-4 fw-bold mb-2">HappyShop</h1>
-                      <p className="lead">Tạo tài khoản để mua sắm ngay!</p>
+                      <div className="mb-4">
+                        <FaShoppingBag className="fs-1 mb-2" />
+                        <h2 className="fw-bold mb-1">HappyShop</h2>
+                        <p className="small mb-3">
+                          Giấc ngủ ngon - Hạnh phúc trọn vẹn
+                        </p>
+                      </div>
+
+                      <div className="mb-3">
+                        <p className="fs-6 fw-light mb-2">
+                          Sản phẩm chúng tôi cam kết:
+                        </p>
+                        <div className="d-flex align-items-center mb-2">
+                          <div className="bg-white bg-opacity-25 p-1 rounded-circle me-2">
+                            <FaTshirt className="fs-6" />
+                          </div>
+                          <span className="small">Chất liệu cao cấp</span>
+                        </div>
+                        <div className="d-flex align-items-center mb-2">
+                          <div className="bg-white bg-opacity-25 p-1 rounded-circle me-2">
+                            <FaBed className="fs-6" />
+                          </div>
+                          <span className="small">Thiết kế thoải mái</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6">
-                  <div className="card-body p-4 p-md-5">
-                    <div className="d-flex align-items-center mb-4 pb-1">
-                      <FaUserPlus className="text-primary fs-4 me-3" />
-                      <span className="h2 fw-bold">Đăng ký</span>
+
+                {/* Register form section - increased width */}
+                <div className="col-md-7">
+                  <div className="card-body p-3 p-md-4">
+                    <div className="text-center d-md-none mb-3">
+                      <FaShoppingBag className="text-primary fs-1 mb-2" />
+                      <h3 className="fw-bold">HappyShop</h3>
+                      <p className="text-muted small">
+                        Giấc ngủ ngon - Hạnh phúc trọn vẹn
+                      </p>
                     </div>
-                    <div className="form-floating mb-3">
+
+                    <div className="d-flex align-items-center mb-3">
+                      <FaUserPlus className="text-primary me-2" />
+                      <span className="h4 fw-bold mb-0">Đăng ký</span>
+                    </div>
+
+                    <p className="text-muted small mb-3">
+                      Tạo tài khoản để mua sắm đồ ngủ chất lượng cao
+                    </p>
+
+                    <div className="form-floating mb-2">
                       <input
-                        type="text"
-                        className={`form-control ${
+                        type="email"
+                        className={`form-control form-control-sm ${
                           !objCheckInput.isValidEmail ? "is-invalid" : ""
                         }`}
+                        id="floatingEmail"
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
-                      <label>
+                      <label htmlFor="floatingEmail">
                         <FaEnvelope className="me-2" />
                         Email
                       </label>
+                      {!objCheckInput.isValidEmail && (
+                        <div className="invalid-feedback">
+                          Vui lòng nhập email
+                        </div>
+                      )}
                     </div>
-                    <div className="form-floating mb-3">
+
+                    <div className="form-floating mb-2">
                       <input
-                        type="text"
-                        className={`form-control ${
+                        type="tel"
+                        className={`form-control form-control-sm ${
                           !objCheckInput.isValidPhone ? "is-invalid" : ""
                         }`}
+                        id="floatingPhone"
                         placeholder="Phone"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                       />
-                      <label>
+                      <label htmlFor="floatingPhone">
                         <FaPhone className="me-2" />
                         Số điện thoại
                       </label>
+                      {!objCheckInput.isValidPhone && (
+                        <div className="invalid-feedback">
+                          Vui lòng nhập số điện thoại
+                        </div>
+                      )}
                     </div>
-                    <div className="form-floating mb-3">
+
+                    <div className="form-floating mb-2">
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
+                        id="floatingUsername"
                         placeholder="Username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                       />
-                      <label>
+                      <label htmlFor="floatingUsername">
                         <FaUserAlt className="me-2" />
                         Tên người dùng
                       </label>
                     </div>
-                    <div className="form-floating mb-3">
+
+                    <div className="form-floating mb-2">
                       <input
                         type="password"
-                        className={`form-control ${
+                        className={`form-control form-control-sm ${
                           !objCheckInput.isValidPassword ? "is-invalid" : ""
                         }`}
+                        id="floatingPassword"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
-                      <label>
+                      <label htmlFor="floatingPassword">
                         <FaLock className="me-2" />
                         Mật khẩu
                       </label>
+                      {!objCheckInput.isValidPassword && (
+                        <div className="invalid-feedback">
+                          Vui lòng nhập mật khẩu
+                        </div>
+                      )}
                     </div>
-                    <div className="form-floating mb-4">
+
+                    <div className="form-floating mb-3">
                       <input
                         type="password"
-                        className={`form-control ${
+                        className={`form-control form-control-sm ${
                           !objCheckInput.isValidConfirmPassword
                             ? "is-invalid"
                             : ""
                         }`}
+                        id="floatingConfirmPassword"
                         placeholder="Confirm Password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
-                      <label>
+                      <label htmlFor="floatingConfirmPassword">
                         <FaLock className="me-2" />
                         Nhập lại mật khẩu
                       </label>
+                      {!objCheckInput.isValidConfirmPassword && (
+                        <div className="invalid-feedback">
+                          Mật khẩu xác nhận không khớp
+                        </div>
+                      )}
                     </div>
-                    <div className="d-grid">
-                      <button
-                        className="btn btn-primary btn-lg py-3"
-                        onClick={handleRegister}
+
+                    <div className="form-check mb-3">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="agreeTerms"
+                      />
+                      <label
+                        className="form-check-label small"
+                        htmlFor="agreeTerms"
                       >
-                        Đăng ký
+                        Tôi đồng ý với <a href="#">điều khoản</a> và{" "}
+                        <a href="#">chính sách bảo mật</a>
+                      </label>
+                    </div>
+
+                    <div className="d-grid mb-3">
+                      <button
+                        className="btn btn-primary py-2"
+                        onClick={handleRegister}
+                        disabled={isRegistering}
+                        style={{
+                          background:
+                            "linear-gradient(to right, #8A2387, #E94057, #F27121)",
+                          border: "none",
+                        }}
+                      >
+                        {isRegistering ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Đang đăng ký...
+                          </>
+                        ) : (
+                          <>
+                            <FaUserPlus className="me-2" />
+                            Đăng ký
+                          </>
+                        )}
                       </button>
                     </div>
-                    <div className="text-center mt-3">
-                      <span>Đã có tài khoản? </span>
-                      <a
-                        href="#"
-                        onClick={() => navigate("/login")}
-                        className="text-decoration-none"
-                      >
-                        Đăng nhập
-                      </a>
+
+                    <div className="text-center">
+                      <p className="mb-0 small">
+                        Đã có tài khoản?{" "}
+                        <a
+                          className="text-decoration-none fw-bold"
+                          href="#"
+                          onClick={() => navigate("/login")}
+                        >
+                          Đăng nhập
+                        </a>
+                      </p>
                     </div>
                   </div>
                 </div>

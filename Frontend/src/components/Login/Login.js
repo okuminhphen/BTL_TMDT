@@ -14,6 +14,7 @@ import {
   FaShoppingBag,
 } from "react-icons/fa";
 import { loginByUser, logout } from "../../redux/slices/userSlice";
+import { fetchCart } from "../../redux/slices/cartSlice";
 
 const Login = (props) => {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const Login = (props) => {
     // Kiểm tra nếu login thành công
     if (loginByUser.fulfilled.match(resultAction)) {
       toast.success("Login successful!");
+      dispatch(fetchCart());
       navigate("/"); // Chuyển hướng sau khi login
     } else {
       toast.error("Login failed!");
@@ -61,16 +63,16 @@ const Login = (props) => {
   const handlePressEnter = (e) => e.key === "Enter" && handleLogin();
 
   return (
-    <div className="login-container py-5">
+    <div className="login-container py-4">
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-md-10">
-            <div className="card border-0 shadow-lg">
+          <div className="col-md-9">
+            <div className="card border-0 shadow">
               <div className="row g-0">
-                {/* Banner section */}
-                <div className="col-md-6 d-none d-md-block">
+                {/* Banner section - smaller width */}
+                <div className="col-md-5 d-none d-md-block">
                   <div
-                    className="h-100 text-white d-flex flex-column justify-content-center p-5 rounded-start"
+                    className="h-100 text-white d-flex flex-column justify-content-center p-4 rounded-start"
                     style={{
                       background:
                         "linear-gradient(135deg, #8A2387 0%, #E94057 50%, #F27121 100%)",
@@ -93,65 +95,65 @@ const Login = (props) => {
                       }}
                     ></div>
                     <div className="position-relative">
-                      <div className="mb-5">
-                        <FaShoppingBag className="display-1 mb-3" />
-                        <h1 className="display-4 fw-bold mb-2">HappyShop</h1>
-                        <p className="lead">
+                      <div className="mb-4">
+                        <FaShoppingBag className="fs-1 mb-2" />
+                        <h2 className="fw-bold mb-1">HappyShop</h2>
+                        <p className="small mb-3">
                           Giấc ngủ ngon - Hạnh phúc trọn vẹn
                         </p>
                       </div>
 
-                      <div className="mb-5">
-                        <p className="fs-5 fw-light mb-4">
+                      <div className="mb-3">
+                        <p className="fs-6 fw-light mb-2">
                           Sản phẩm chúng tôi cam kết:
                         </p>
-                        <div className="d-flex align-items-center mb-3">
-                          <div className="bg-white bg-opacity-25 p-2 rounded-circle me-3">
-                            <FaTshirt className="fs-4" />
+                        <div className="d-flex align-items-center mb-2">
+                          <div className="bg-white bg-opacity-25 p-1 rounded-circle me-2">
+                            <FaTshirt className="fs-6" />
                           </div>
-                          <span>Chất liệu cao cấp</span>
+                          <span className="small">Chất liệu cao cấp</span>
                         </div>
-                        <div className="d-flex align-items-center mb-3">
-                          <div className="bg-white bg-opacity-25 p-2 rounded-circle me-3">
-                            <FaBed className="fs-4" />
+                        <div className="d-flex align-items-center mb-2">
+                          <div className="bg-white bg-opacity-25 p-1 rounded-circle me-2">
+                            <FaBed className="fs-6" />
                           </div>
-                          <span>Thiết kế thoải mái</span>
+                          <span className="small">Thiết kế thoải mái</span>
                         </div>
                         <div className="d-flex align-items-center">
-                          <div className="bg-white bg-opacity-25 p-2 rounded-circle me-3">
-                            <FaMoon className="fs-4" />
+                          <div className="bg-white bg-opacity-25 p-1 rounded-circle me-2">
+                            <FaMoon className="fs-6" />
                           </div>
-                          <span>Giấc ngủ trọn vẹn</span>
+                          <span className="small">Giấc ngủ trọn vẹn</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Login form section */}
-                <div className="col-md-6">
-                  <div className="card-body p-4 p-md-5">
-                    <div className="text-center d-md-none mb-4">
-                      <FaShoppingBag className="text-primary display-5 mb-2" />
-                      <h2 className="fw-bold">HappyShop</h2>
-                      <p className="text-muted">
+                {/* Login form section - increased width */}
+                <div className="col-md-7">
+                  <div className="card-body p-3 p-md-4">
+                    <div className="text-center d-md-none mb-3">
+                      <FaShoppingBag className="text-primary fs-1 mb-2" />
+                      <h3 className="fw-bold">HappyShop</h3>
+                      <p className="text-muted small">
                         Giấc ngủ ngon - Hạnh phúc trọn vẹn
                       </p>
                     </div>
 
-                    <div className="d-flex align-items-center mb-4 pb-1">
-                      <FaUserAlt className="text-primary fs-4 me-3" />
-                      <span className="h2 fw-bold">Đăng nhập</span>
+                    <div className="d-flex align-items-center mb-3">
+                      <FaUserAlt className="text-primary me-2" />
+                      <span className="h4 fw-bold mb-0">Đăng nhập</span>
                     </div>
 
-                    <p className="text-muted mb-4">
+                    <p className="text-muted small mb-3">
                       Đăng nhập để mua sắm đồ ngủ chất lượng cao
                     </p>
 
-                    <div className="form-floating mb-4">
+                    <div className="form-floating mb-3">
                       <input
                         type="text"
-                        className={`form-control ${
+                        className={`form-control form-control-sm ${
                           !objValidInput.isValidEmailOrPhone ? "is-invalid" : ""
                         }`}
                         id="floatingEmail"
@@ -172,10 +174,10 @@ const Login = (props) => {
                       )}
                     </div>
 
-                    <div className="form-floating mb-4">
+                    <div className="form-floating mb-3">
                       <input
                         type="password"
-                        className={`form-control ${
+                        className={`form-control form-control-sm ${
                           !objValidInput.isValidPassword ? "is-invalid" : ""
                         }`}
                         id="floatingPassword"
@@ -195,20 +197,23 @@ const Login = (props) => {
                       )}
                     </div>
 
-                    <div className="form-check mb-4">
+                    <div className="form-check mb-3">
                       <input
                         className="form-check-input"
                         type="checkbox"
                         id="rememberMe"
                       />
-                      <label className="form-check-label" htmlFor="rememberMe">
+                      <label
+                        className="form-check-label small"
+                        htmlFor="rememberMe"
+                      >
                         Ghi nhớ đăng nhập
                       </label>
                     </div>
 
-                    <div className="d-grid mb-4">
+                    <div className="d-grid mb-3">
                       <button
-                        className="btn btn-primary btn-lg py-3"
+                        className="btn btn-primary py-2"
                         onClick={handleLogin}
                         disabled={loading}
                         style={{
@@ -222,21 +227,21 @@ const Login = (props) => {
                       </button>
                     </div>
 
-                    <div className="text-center mb-4">
-                      <a href="#" className="text-decoration-none">
+                    <div className="text-center mb-3">
+                      <a href="#" className="text-decoration-none small">
                         Quên mật khẩu?
                       </a>
                     </div>
 
-                    <div className="divider d-flex align-items-center my-4">
-                      <p className="text-center fw-bold mx-3 mb-0 text-muted">
+                    <div className="divider d-flex align-items-center my-3">
+                      <p className="text-center fw-bold mx-3 mb-0 text-muted small">
                         HOẶC
                       </p>
                     </div>
 
                     <div className="d-grid">
                       <button
-                        className="btn btn-outline-primary btn-lg py-3"
+                        className="btn btn-outline-primary py-2"
                         onClick={() => goToRegister()}
                       >
                         <FaUserPlus className="me-2" />

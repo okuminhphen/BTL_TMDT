@@ -27,8 +27,12 @@ const initApiRouter = (app) => {
     router.post("/product/create", productController.createFunc);
     router.put("/product/update", productController.updateFunc);
     router.delete("/product/delete", productController.deleteFunc);
+    router.get(
+        "/product-by-category/read",
+        productController.getProductByCategoryFunc
+    );
     //cart route
-    router.get("/cart/read/:userId", cartController.readFunc);
+    router.get("/cart/read/:userId", verifyToken, cartController.readFunc);
     router.post("/cart/add", verifyToken, cartController.addFunc);
     router.put("/cart/update", verifyToken, cartController.updateFunc);
     router.delete(

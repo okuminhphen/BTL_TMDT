@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -25,7 +25,7 @@ const ProductDetail = () => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [productSize, setProductSize] = useState(null);
   const [mainImage, setMainImage] = useState(null); // Ảnh chính
-
+  const navigate = useNavigate();
   useEffect(() => {
     getProductDetails(id);
     getSizes();
@@ -71,6 +71,11 @@ const ProductDetail = () => {
   if (!product) return <p>Loading...</p>;
 
   const handleAddToCart = async () => {
+    if (!userId) {
+      toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!");
+      navigate("/login"); // Chuyển hướng về trang đăng nhập
+      return;
+    }
     if (!selectedSizeId) {
       alert("Vui lòng chọn size!");
       return;

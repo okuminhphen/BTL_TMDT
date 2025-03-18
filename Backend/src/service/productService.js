@@ -294,6 +294,25 @@ const getProductById = async (idProduct) => {
         };
     }
 };
+const getProductByCategoryId = async (categoryId) => {
+    try {
+        let data = await db.Product.findAll({
+            where: { categoryId: categoryId },
+        });
+        return {
+            EM: "get product by category id success",
+            EC: 0,
+            DT: data,
+        };
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "something wrong :(",
+            EC: 1,
+            DT: [],
+        };
+    }
+};
 module.exports = {
     getProducts,
     getAllSizes,
@@ -303,4 +322,5 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getProductById,
+    getProductByCategoryId,
 };

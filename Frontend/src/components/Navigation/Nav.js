@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container, Button, Badge } from "react-bootstrap";
 import "./Nav.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -8,12 +8,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchCart } from "../../redux/slices/cartSlice";
 
 const Navigation = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   useEffect(() => {
     // Lấy giỏ hàng khi component Navigation mount lần đầu
     dispatch(fetchCart());
   }, [dispatch]);
+  const handleAdminClick = () => {
+    navigate("/admin"); // Đường dẫn đến trang admin
+  };
   return (
     <>
       <Navbar bg="light" expand="lg" className="border-bottom px-4 py-3">
@@ -36,7 +40,11 @@ const Navigation = () => {
               <NavLink to="/contact" className="nav-link">
                 CONTACT
               </NavLink>
-              <Button variant="outline-dark" className="rounded-pill ms-3">
+              <Button
+                variant="outline-dark"
+                className="rounded-pill ms-3"
+                onClick={handleAdminClick} // Thêm sự kiện onClick
+              >
                 Admin Panel
               </Button>
             </Nav>

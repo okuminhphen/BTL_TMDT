@@ -1,0 +1,161 @@
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f9;
+}
+
+.admin-sidebar {
+  width: 250px;
+  background: linear-gradient(to bottom, #8a2387, #e94057);
+  color: white;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 1000;
+
+  &.collapsed {
+    width: 60px;
+  }
+
+  .sidebar-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .sidebar-toggle {
+      color: white;
+      padding: 0;
+      &:hover,
+      &:focus {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 15px 0;
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-left: 3px solid white;
+      }
+
+      .sidebar-icon {
+        margin-right: 10px;
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    button {
+      width: 100%;
+      color: white;
+      border-color: rgba(255, 255, 255, 0.5);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+
+.admin-content {
+  flex: 1;
+  margin-left: 250px;
+  transition: all 0.3s ease;
+
+  &.expanded {
+    margin-left: 60px;
+  }
+}
+
+.admin-header {
+  background-color: white;
+  padding: 15px 25px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-body {
+  padding: 25px;
+}
+
+.stat-card {
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    color: #777;
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 60px;
+
+    &.expanded {
+      width: 250px;
+    }
+  }
+
+  .admin-content {
+    margin-left: 60px;
+
+    &.expanded {
+      margin-left: 250px;
+    }
+  }
+}

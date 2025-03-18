@@ -9,15 +9,7 @@ import AppRoutes from "./routes/AppRoutes";
 function App() {
   return (
     <Router>
-      <div className="app-header">
-        <Nav />
-      </div>
-      <div className="app-container">
-        <AppRoutes />
-      </div>
-      <div className="app-footer">
-        <Footer />
-      </div>
+      <AppRoutes />
       <ToastContainer
         position="bottom-center"
         autoClose={5000}

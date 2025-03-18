@@ -155,8 +155,9 @@ const getProductFunc = async (req, res) => {
 
 const getProductByCategoryFunc = async (req, res) => {
     try {
-        const categoryId = req.body.categoryId;
-        let data = await productService.getProductByCategory(categoryId);
+        let categoryId = req.body.categoryId;
+
+        let data = await productService.getProductByCategoryId(categoryId);
         if (data) {
             return res.status(200).json({
                 EM: data.EM, // error message
