@@ -1,6 +1,7 @@
 "use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+import { Model } from "sequelize";
+
+export default (sequelize, DataTypes) => {
     class ProductSize extends Model {
         /**
          * Helper method for defining associations.
@@ -24,10 +25,6 @@ module.exports = (sequelize, DataTypes) => {
                 through: "CartProductSize",
                 foreignKey: "productSizeId",
                 otherKey: "cartId", // 👈 Chỉ định khóa ngoại đúng
-            });
-
-            ProductSize.belongsToMany(models.Order, {
-                through: "OrderProductSize",
             });
         }
     }

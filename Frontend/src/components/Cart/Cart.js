@@ -23,8 +23,10 @@ import {
   removeCartItemAsync,
 } from "../../redux/slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cartItems, totalPrice, error } = useSelector((state) => state.cart);
 
@@ -254,6 +256,9 @@ const Cart = () => {
                       size="lg"
                       disabled={cartItems.length === 0}
                       className="px-4"
+                      onClick={() => {
+                        navigate("/payment");
+                      }}
                     >
                       <FaCreditCard className="me-2" /> Thanh toán
                     </Button>

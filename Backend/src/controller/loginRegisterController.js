@@ -1,5 +1,6 @@
-import loginRegisterService from "../service/loginRegisterService";
-import { generateToken } from "../middleware/authMiddleware";
+import loginRegisterService from "../service/loginRegisterService.js";
+import { generateToken } from "../middleware/authMiddleware.js";
+
 const testApi = (req, res) => {
     return res.status(200).json({
         message: "oke",
@@ -43,7 +44,6 @@ const handleRegister = async (req, res) => {
 };
 
 const handleLogin = async (req, res) => {
-    console.log("check login from react", req.body);
     try {
         let data = await loginRegisterService.handleUserLogin(req.body);
 
@@ -53,7 +53,9 @@ const handleLogin = async (req, res) => {
                 email: data.DT.email,
                 role: data.DT.userRole.name,
             };
+
             const token = generateToken(payload);
+
             if (!token) {
                 return res.status(401).json({ EM: "invalid token" });
             }
@@ -78,9 +80,16 @@ const handleLogin = async (req, res) => {
         });
     }
 };
-
-module.exports = {
+const handleLogout = (req, res) => {
+    res.clearCookie("token");
+    return res.status(200).json({
+        EM: "Logout successfully",
+        EC: "0",
+    });
+};
+export default {
     testApi,
     handleRegister,
     handleLogin,
+    handleLogout,
 };

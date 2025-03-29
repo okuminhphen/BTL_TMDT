@@ -5,6 +5,7 @@ const SECRET_KEY = process.env.JWT_SECRET || "jwt"; // Dùng biến môi trườ
 
 // 1️⃣ Hàm tạo token khi đăng nhập thành công
 const generateToken = (user) => {
+    console.log("check generateToken", user);
     return jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
         SECRET_KEY,
@@ -35,4 +36,4 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-module.exports = { generateToken, verifyToken };
+export { generateToken, verifyToken };

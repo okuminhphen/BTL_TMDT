@@ -1,11 +1,16 @@
 import express from "express";
-import loginRegisterController from "../controller/loginRegisterController";
-import productController from "../controller/productController";
-import uploadController from "../controller/uploadController";
-import cartController from "../controller/cartController";
-import upload from "../middleware/upload";
-import { verifyToken } from "../middleware/authMiddleware";
+import loginRegisterController from "../controller/loginRegisterController.js";
+import productController from "../controller/productController.js";
+import uploadController from "../controller/uploadController.js";
+import cartController from "../controller/cartController.js";
+import orderController from "../controller/orderController.js";
+import upload from "../middleware/upload.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
+import paymentController from "../controller/paymentController.js";
 
+import dotenv from "dotenv";
+
+dotenv.config();
 const router = express.Router();
 
 /**
@@ -19,6 +24,7 @@ const initApiRouter = (app) => {
     router.get("/test-api", loginRegisterController.testApi);
     router.post("/register", loginRegisterController.handleRegister);
     router.post("/login", loginRegisterController.handleLogin);
+    router.post("/logout", loginRegisterController.handleLogout);
     //product route
     router.get("/product/read", productController.readFunc);
     router.get("/size/read", productController.readSizeFunc);
@@ -47,6 +53,27 @@ const initApiRouter = (app) => {
         upload.array("images", 5),
         uploadController.uploadFunc
     );
+
+    //order route
+    router.get("/order/read", verifyToken, orderController.readFunc);
+    router.get(
+        "/order/read/:userId",
+        verifyToken,
+        orderController.readByUserIdFunc
+    );
+    router.post("/order/create", verifyToken, orderController.createFunc);
+    router.put("/order/update", verifyToken, orderController.updateFunc);
+    router.put(
+        "/order/details/update/:orderId",
+        verifyToken,
+        orderController.updateStatusFunc
+    );
+    router.delete("/order/delete", orderController.deleteFunc);
+    //payment route
+    router.get("/payment-methods", paymentController.readPaymentMethodsFunc);
+    router.post("/create-payment-url", paymentController.createPaymentUrlFunc);
+
+    router.get("/payment-return", paymentController.getPaymentReturnFunc);
 
     return app.use("/api/v1/", router);
 };

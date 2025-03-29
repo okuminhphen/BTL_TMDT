@@ -1,4 +1,4 @@
-import db from "../models/index";
+import db from "../models/index.js";
 
 const getProducts = async () => {
     try {
@@ -313,7 +313,7 @@ const getProductByCategoryId = async (categoryId) => {
         };
     }
 };
-module.exports = {
+export default {
     getProducts,
     getAllSizes,
     getCategory,

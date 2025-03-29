@@ -1,4 +1,4 @@
-import db from "../models/index";
+import db from "../models/index.js";
 
 const getUserCartById = async (userId) => {
     try {
@@ -210,7 +210,7 @@ const deleteProductInCart = async (cartProductSizeId) => {
         };
     }
 };
-module.exports = {
+export default {
     getUserCartById,
     addProductToCart,
     updateProductInCart,

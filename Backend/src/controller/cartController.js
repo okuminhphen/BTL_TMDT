@@ -1,4 +1,4 @@
-import cartService from "../service/cartService";
+import cartService from "../service/cartService.js";
 const readFunc = async (req, res) => {
     try {
         let userId = req.params.userId;
@@ -88,4 +88,4 @@ const deleteFunc = async (req, res) => {
         });
     }
 };
-module.exports = { readFunc, addFunc, updateFunc, deleteFunc };
+export default { readFunc, addFunc, updateFunc, deleteFunc };

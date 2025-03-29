@@ -11,7 +11,10 @@ import MainLayout from "../Layout/MainLayout";
 import AuthLayout from "../Layout/AuthLayout";
 import AdminLayout from "../Layout/AdminLayout";
 import AdminPage from "../Pages/AdminPage";
-
+import PaymentPage from "../components/PaymentPage/PaymentPage";
+import PaymentStatus from "../components/PaymentStatusPage/PaymentStatus";
+import OrdersPage from "../components/OrdersPage/OrdersPage";
+import OrderDetailsPage from "../components/OrderDetailsPage/OrderDetailsPage";
 const AppRoutes = (props) => {
   return (
     <>
@@ -60,6 +63,14 @@ const AppRoutes = (props) => {
           }
         />
         <Route
+          path="/payment"
+          element={
+            <MainLayout>
+              <PaymentPage />
+            </MainLayout>
+          }
+        />
+        <Route
           path="/login"
           element={
             <AuthLayout>
@@ -101,13 +112,22 @@ const AppRoutes = (props) => {
             }
           />
           <Route
-            path="/order"
+            path="/orders/user/:userId"
             element={
               <MainLayout>
-                <div>order</div>
+                <OrdersPage />
               </MainLayout>
             }
           />
+          <Route
+            path="/orders/details/:orderId"
+            element={
+              <MainLayout>
+                <OrderDetailsPage />
+              </MainLayout>
+            }
+          />
+          <Route path="/payment-status" element={<PaymentStatus />} />
         </Route>
 
         <Route path="*" element={<div>404 not found</div>} />

@@ -1,4 +1,4 @@
-import productService from "../service/productService";
+import productService from "../service/productService.js";
 
 const readFunc = async (req, res) => {
     try {
@@ -174,7 +174,7 @@ const getProductByCategoryFunc = async (req, res) => {
         });
     }
 };
-module.exports = {
+export default {
     readFunc,
     readSizeFunc,
     readCategoryFunc,

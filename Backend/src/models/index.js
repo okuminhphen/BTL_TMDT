@@ -1,51 +1,67 @@
 "use strict";
 
-require("dotenv").config();
-const fs = require("fs");
-const path = require("path");
-const Sequelize = require("sequelize");
-const process = require("process");
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { Sequelize } from "sequelize";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-const config = require(__dirname + "/../config/config.json")[env];
+
+// Đọc config.json
+const configJson = JSON.parse(
+    fs.readFileSync(new URL("../config/config.json", import.meta.url))
+);
+const config = configJson[env];
+
 const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+    sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-  );
+    sequelize = new Sequelize(
+        config.database,
+        config.username,
+        config.password,
+        config
+    );
 }
 
-fs.readdirSync(__dirname)
-  .filter((file) => {
-    return (
-      file.indexOf(".") !== 0 &&
-      file !== basename &&
-      file.slice(-3) === ".js" &&
-      file.indexOf(".test.js") === -1
-    );
-  })
-  .forEach((file) => {
-    const model = require(path.join(__dirname, file))(
-      sequelize,
-      Sequelize.DataTypes
-    );
-    db[model.name] = model;
-  });
+// Load models
+const modelFiles = fs
+    .readdirSync(__dirname)
+    .filter((file) => file.endsWith(".js") && file !== basename);
 
-Object.keys(db).forEach((modelName) => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+async function loadModels() {
+    // 1️⃣ Khởi tạo models trước
+    for (const file of modelFiles) {
+        const { default: modelFn } = await import(
+            `file://${path.join(__dirname, file)}`
+        );
+        const modelInstance = modelFn(sequelize, Sequelize.DataTypes); // Gọi hàm để lấy model instance
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+        db[modelInstance.name] = modelInstance; // Lưu vào db với tên instance
+    }
 
-module.exports = db;
+    // 2️⃣ Gọi associate sau khi tất cả models đã khởi tạo
+    Object.keys(db).forEach((modelName) => {
+        if (db[modelName].associate) {
+            db[modelName].associate(db);
+        }
+    });
+
+    db.sequelize = sequelize;
+    db.Sequelize = Sequelize;
+}
+
+await loadModels();
+
+export default db;
