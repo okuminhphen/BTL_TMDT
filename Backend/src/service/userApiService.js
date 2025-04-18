@@ -1,127 +1,105 @@
-// import db from "../models/index";
+import db from "../models/index.js";
+import bcrypt from "bcryptjs";
+const checkPassword = (inputPassword, hashPassword) => {
+    return bcrypt.compareSync(inputPassword, hashPassword); // true or false
+};
+const getUserById = async (id) => {
+    try {
+        const user = await db.User.findByPk(id);
 
-// const getAllUsers = async () => {
-//   try {
-//     let data = await db.User.findAll({
-//       attributes: ["id", "username", "email", "phone", "sex"],
-//       include: { model: db.Group, attributes: ["name", "description"] },
-//       nest: true,
-//     });
-//     if (data) {
-//       return {
-//         EM: "get data success",
-//         EC: 0,
-//         DT: data,
-//       };
-//     } else {
-//       return {
-//         EM: "get data success",
-//         EC: 0,
-//         DT: [],
-//       };
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     return {
-//       EM: "something wrongs with service",
-//       EC: "1",
-//       DT: [],
-//     };
-//   }
-// };
-// const getUsersWithPagination = async (page, limit) => {
-//   try {
-//     let offset = (page - 1) * limit;
-//     const { count, rows } = await db.User.findAndCountAll({
-//       attributes: ["id", "username", "email", "phone", "sex"],
-//       include: { model: db.Group, attributes: ["name", "description"] },
-//       offset: offset,
-//       limit: limit,
-//     });
-//     let totalPages = Math.ceil(count / limit);
-//     let data = { totalRows: count, totalPage: totalPages, users: rows };
+        if (!user) {
+            return {
+                EM: "User not found",
+                EC: 1,
+                DT: null,
+            };
+        }
+        return {
+            EM: "Get user successfully",
+            EC: 0,
+            DT: user,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from server",
+            EC: 1,
+            DT: null,
+        };
+    }
+};
 
-//     if (data) {
-//       return {
-//         EM: "get data success",
-//         EC: 0,
-//         DT: data,
-//       };
-//     } else {
-//       return {
-//         EM: "get data success",
-//         EC: 0,
-//         DT: [],
-//       };
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     return {
-//       EM: "something wrongs with service",
-//       EC: "1",
-//       DT: [],
-//     };
-//   }
-// };
+const updateUserById = async (id, userData) => {
+    try {
+        console.log("id", id);
+        const user = await db.User.findByPk(id);
+        if (!user) {
+            return {
+                EM: "User not found",
+                EC: 1,
+                DT: null,
+            };
+        }
+        await user.update(userData);
+        return {
+            EM: "Update user successfully",
+            EC: 0,
+            DT: user,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from server",
+            EC: 1,
+            DT: null,
+        };
+    }
+};
 
-// const createNewUser = async (data) => {
-//   try {
-//     await db.User.create(data);
-//     return {
-//       EM: "create new user success",
-//       EC: 0,
-//       DT: data,
-//     };
-//   } catch (e) {
-//     console.log(e);
-//     return {
-//       EM: "failed to create user",
-//       EC: 1,
-//       DT: [],
-//     };
-//   }
-// };
-// const updateUser = async (data) => {
-//   try {
-//     let user = await db.User.findOne({ where: { id: data.id } });
-//     if (user) {
-//       user.update();
-//     }
-//   } catch (e) {
-//     console.log(e);
-//   }
-// };
-// const deleteUser = async (id) => {
-//   try {
-//     let user = await db.User.findOne({ where: { id: id } });
-//     if (user) {
-//       await user.destroy();
-//       return {
-//         EM: "delete user data success",
-//         EC: 0,
-//         DT: user,
-//       };
-//     } else {
-//       return {
-//         EM: "user is not exist",
-//         EC: 2,
-//         DT: [],
-//       };
-//     }
-//   } catch (e) {
-//     console.log(e);
-//     return {
-//       EM: "something wrongs with service",
-//       EC: 1,
-//       DT: [],
-//     };
-//   }
-// };
+const updatePasswordById = async (id, passwordData) => {
+    try {
+        const user = await db.User.findByPk(parseInt(id));
+        if (!user) {
+            return {
+                EM: "User not found",
+                EC: 1,
+                DT: null,
+            };
+        }
 
-// module.exports = {
-//   getAllUsers,
-//   getUsersWithPagination,
-//   createNewUser,
-//   updateUser,
-//   deleteUser,
-// };
+        console.log("passwordData", passwordData);
+
+        const isCorrectCurrentPassword = checkPassword(
+            passwordData.currentPassword,
+            user.password
+        );
+        if (!isCorrectCurrentPassword) {
+            console.log("Current password is incorrect");
+            return {
+                EM: "Current password is incorrect",
+                EC: 1,
+                DT: null,
+            };
+        }
+        console.log("passwordData.newPassword", passwordData.newPassword);
+        const hashPassword = bcrypt.hashSync(passwordData.newPassword, 10);
+        await user.update({ password: hashPassword });
+        return {
+            EM: "Update password successfully",
+            EC: 0,
+            DT: user,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from server",
+            EC: 1,
+            DT: null,
+        };
+    }
+};
+export default {
+    getUserById,
+    updateUserById,
+    updatePasswordById,
+};

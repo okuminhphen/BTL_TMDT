@@ -1,5 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser } from "../../service/userService";
+import {
+  loginUser,
+  updateUserById,
+  updatePasswordById,
+} from "../../service/userService";
+import { toast } from "react-toastify";
 // Async thunk để đăng nhập người dùng
 export const loginByUser = createAsyncThunk(
   "user/login",
@@ -25,7 +30,53 @@ export const loginByUser = createAsyncThunk(
     }
   }
 );
+export const updateUserThunk = createAsyncThunk(
+  "user/update",
+  async ({ userId, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await updateUserById(userId, updatedData);
 
+      if (response && response.data && +response.data.EC === 0) {
+        const updatedUser = response.data.DT;
+
+        // Cập nhật sessionStorage nếu cần
+        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+
+        return updatedUser;
+      } else {
+        return rejectWithValue(response.data.EM || "Cập nhật thất bại");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.EM || "Lỗi khi cập nhật thông tin"
+      );
+    }
+  }
+);
+export const updatePasswordThunk = createAsyncThunk(
+  "user/updatePassword",
+  async ({ userId, updatedPassword }, { rejectWithValue }) => {
+    try {
+      const response = await updatePasswordById(userId, updatedPassword);
+
+      if (response && response.data) {
+        const updatedPassword = response.data.DT;
+
+        if (+response.data.EC === 0) {
+          toast.success(response.data.EM);
+          return updatedPassword;
+        } else if (+response.data.EC === 1) {
+          toast.error(response.data.EM);
+          return rejectWithValue(response.data.EM);
+        }
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.EM || "Lỗi khi cập nhật mật khẩu"
+      );
+    }
+  }
+);
 const initialState = {
   currentUser: JSON.parse(sessionStorage.getItem("user")) || null,
   isAuthenticated: !!sessionStorage.getItem("user"),
@@ -62,6 +113,19 @@ const userSlice = createSlice({
       .addCase(loginByUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Đăng nhập thất bại";
+      })
+      .addCase(updateUserThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(updateUserThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Cập nhật thất bại";
       });
   },
 });

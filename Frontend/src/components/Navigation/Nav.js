@@ -97,7 +97,10 @@ const Navigation = () => {
                 <div
                   className={`dropdown-menu ${isDropdownOpen ? "show" : ""}`}
                 >
-                  <NavLink to="/account" className="dropdown-item">
+                  <NavLink
+                    to={`/user-account/${userId}`}
+                    className="dropdown-item"
+                  >
                     <i className="fa-solid fa-user-circle me-2"></i>
                     Tài khoản
                   </NavLink>

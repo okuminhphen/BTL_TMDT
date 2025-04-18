@@ -129,8 +129,6 @@ const handleUserLogin = async (rawUserData) => {
             EC: 0,
             DT: {
                 userId: user.id,
-                email: user.email,
-                password: user.password,
                 userRole: role, // Thêm danh sách role
             },
         };

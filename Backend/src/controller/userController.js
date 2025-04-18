@@ -52,6 +52,14 @@ const createFunc = async (req, res) => {
 };
 const updateFunc = async (req, res) => {
     try {
+        let userId = req.params.userId;
+        let userData = req.body;
+        let data = await userApiService.updateUserById(userId, userData);
+        return res.status(200).json({
+            EM: data.EM, // error message
+            EC: data.EC, //error code
+            DT: data.DT, // Data
+        });
     } catch (e) {
         console.log(e);
         return res.status(500).json({
@@ -78,10 +86,53 @@ const deleteFunc = async (req, res) => {
         });
     }
 };
+const getUserFunc = async (req, res) => {
+    try {
+        let userId = req.params.id;
+        console.log("userId from controller", userId);
+        let data = await userApiService.getUserById(userId);
+        return res.status(200).json({
+            EM: data.EM, // error message
+            EC: data.EC, //error code
+            DT: data.DT, // Data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "error", // error message
+            EC: "-1", //error code
+            DT: "", // Date
+        });
+    }
+};
+const updatePasswordFunc = async (req, res) => {
+    try {
+        let userId = req.params.id;
+        let passwordData = req.body;
 
-module.exports = {
+        let data = await userApiService.updatePasswordById(
+            userId,
+            passwordData
+        );
+        return res.status(200).json({
+            EM: data.EM, // error message
+            EC: data.EC, //error code
+            DT: data.DT, // Data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "error", // error message
+            EC: "-1", //error code
+            DT: "", // Date
+        });
+    }
+};
+export default {
     readFunc,
     createFunc,
     updateFunc,
     deleteFunc,
+    getUserFunc,
+    updatePasswordFunc,
 };

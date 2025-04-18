@@ -5,7 +5,10 @@ import React, { useEffect } from "react";
 import { Container, Button, Card, Row, Col, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-
+import bannerSaleImg from "../../assets/banner-sale70.png";
+import bannerNewArrivals from "../../assets/banner-new-arrival.jpg";
+import banner from "../../assets/banner.jpg";
+import { Carousel } from "react-bootstrap";
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -60,29 +63,76 @@ const Home = () => {
     },
   ];
 
+  const bannerData = [
+    {
+      id: 1,
+      image: bannerSaleImg,
+      alt: "Sale 70%",
+      link: "/products",
+      caption: "",
+    },
+    {
+      id: 2,
+      image: bannerNewArrivals,
+      alt: "Thank you",
+      caption: "Thank you for visiting – Happy shopping!",
+    },
+  ];
   return (
     <div>
       <Container className="text-center text-md-start py-5 custom-container">
         <div className="row align-items-center">
-          <div className="col-md-6">
-            <p className="text-muted small">OUR BESTSELLERS</p>
-            <h1 className="display-4 fw-bold">Latest Arrivals</h1>
-            <a
-              className="text-dark text-decoration-none mt-3 d-inline-block"
-              href="/collection"
-            >
-              SHOP NOW <span className="border-bottom border-dark ms-2"></span>
-            </a>
+          <div className="banner-carousel col-md-12">
+            <Carousel fade className="mb-4">
+              {bannerData.map((banner) => (
+                <Carousel.Item
+                  key={banner.id}
+                  onClick={() => navigate(banner.link)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <img
+                    className="d-block w-100"
+                    src={banner.image}
+                    alt={banner.alt}
+                    style={{ maxHeight: "600px", objectFit: "cover" }}
+                  />
+                  <Carousel.Caption>
+                    <h3>{banner.caption}</h3>
+                  </Carousel.Caption>
+                </Carousel.Item>
+              ))}
+            </Carousel>
           </div>
-          <div className="col-md-6 mt-4 mt-md-0">
+        </div>
+        <hr className="my-4 border-top border-3 border-gradient" />
+
+        <div className="row align-items-center new-arrivals-section">
+          <div className="col-md-1"></div>
+          <div className="col-md-6">
+            <h1 className="new-arrivals-title">New Arrivals</h1>
+            <p className="new-arrivals-description text-muted">
+              Discover the latest trends and styles added to our collection. Be
+              the first to explore our new arrivals and find your next favorite
+              item!
+            </p>
+            <Button
+              variant="primary"
+              className="new-arrivals-button"
+              onClick={() => (window.location.href = "/products")}
+            >
+              SHOP NOW
+            </Button>
+          </div>
+          <div className="col-md-4">
             <img
-              src="https://storage.googleapis.com/a1aa/image/6DkjyPaqriy8yYuQcSv76PAcQQ1rFcORnwY0QwGynQ8.jpg"
-              alt="Fashionable woman"
-              className="img-fluid"
+              className="d-block w-100 new-arrivals-image"
+              src={banner}
+              alt="banner"
             />
           </div>
         </div>
       </Container>
+      <hr className="my-4 border-top border-3 border-gradient" />
       {/* Product List */}
       <Container className="py-5 custom-container">
         <h2 className="text-center mb-4">LATEST COLLECTIONS</h2>
@@ -109,6 +159,7 @@ const Home = () => {
           })}
         </div>
       </Container>
+      <hr className="my-4 border-top border-3 border-gradient" />
       <Container className="py-5 custom-container">
         <h2 className="text-center mb-4">BEST SELLERS</h2>
         <p className="">
@@ -138,6 +189,7 @@ const Home = () => {
           })}
         </div>
       </Container>
+      <hr className="my-4 border-top border-3 border-gradient" />
       <Container className="py-5">
         <Row className="text-center mb-5">
           {features.map((feature, index) => (
@@ -163,10 +215,7 @@ const Home = () => {
         <Row className="text-center">
           <Col md={8} className="mx-auto">
             <h2 className="fs-4 fw-bold">Subscribe now & get 20% off</h2>
-            <p className="text-muted">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
-            </p>
+
             <Form className="d-flex justify-content-center">
               <Form.Control
                 type="email"

@@ -10,11 +10,12 @@ import Cart from "../components/Cart/Cart";
 import MainLayout from "../Layout/MainLayout";
 import AuthLayout from "../Layout/AuthLayout";
 import AdminLayout from "../Layout/AdminLayout";
-import AdminPage from "../Pages/AdminPage";
+import AdminPage from "../pages/AdminPage";
 import PaymentPage from "../components/PaymentPage/PaymentPage";
 import PaymentStatus from "../components/PaymentStatusPage/PaymentStatus";
 import OrdersPage from "../components/OrdersPage/OrdersPage";
 import OrderDetailsPage from "../components/OrderDetailsPage/OrderDetailsPage";
+import AccountPage from "../pages/AccountPage/AccountPage";
 const AppRoutes = (props) => {
   return (
     <>
@@ -86,6 +87,7 @@ const AppRoutes = (props) => {
             </AuthLayout>
           }
         />
+
         <Route
           path="/"
           element={
@@ -128,6 +130,14 @@ const AppRoutes = (props) => {
             }
           />
           <Route path="/payment-status" element={<PaymentStatus />} />
+          <Route
+            path="/user-account/:userId"
+            element={
+              <MainLayout>
+                <AccountPage />
+              </MainLayout>
+            }
+          />
         </Route>
 
         <Route path="*" element={<div>404 not found</div>} />

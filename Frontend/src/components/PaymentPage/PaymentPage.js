@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createOrderThunk, addOrderTemp } from "../../redux/slices/orderSlice";
 import { creatPayment, getPaymentMethods } from "../../service/paymentService";
 import { toast } from "react-toastify";
+import { getAllVouchers } from "../../service/voucherService";
 const PaymentPage = () => {
   const defaultCustomerInfo = {
     name: "",
@@ -35,12 +36,16 @@ const PaymentPage = () => {
       0
     );
   };
-
+  const [vouchers, setVouchers] = useState([]);
+  const [currentVoucher, setCurrentVoucher] = useState({});
+  const [discount, setDiscount] = useState(0);
   const shippingFee = 30000;
   const subtotal = calculateSubtotal();
-  const total = subtotal + shippingFee;
+  const total = subtotal + shippingFee - discount;
+
   useEffect(() => {
     fetchPaymentMethods();
+    fetchAllVouchers();
   }, []);
 
   const fetchPaymentMethods = async () => {
@@ -49,7 +54,12 @@ const PaymentPage = () => {
       setPaymentMethods(response.data.DT);
     }
   };
-
+  const fetchAllVouchers = async () => {
+    let response = await getAllVouchers();
+    if (response.data.EC === "0") {
+      setVouchers(response.data.DT);
+    }
+  };
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
     setCustomerInfo({
@@ -57,7 +67,19 @@ const PaymentPage = () => {
       paymentMethod: e.target.value,
     });
   };
+  const handleVoucherChange = (e) => {
+    const selectedCode = e.target.value;
+    const selectedVoucher = vouchers.find((v) => v.code === selectedCode);
+    const discountType = selectedVoucher.discount_type;
+    const discountValue = selectedVoucher.discount_value;
+    if (discountType === "percent") {
+      setDiscount((subtotal * discountValue) / 100);
+    } else if (discountType === "fixed") {
+      setDiscount(parseInt(discountValue));
+    }
 
+    setCurrentVoucher(selectedVoucher || {});
+  };
   const handlePayment = async (e) => {
     e.preventDefault();
     let paymentMethodId = paymentMethods.find(
@@ -182,6 +204,12 @@ const PaymentPage = () => {
                   <span>Phí vận chuyển:</span>
                   <span>{shippingFee.toLocaleString("vi-VN")}₫</span>
                 </ListGroup.Item>
+                {currentVoucher.id && (
+                  <ListGroup.Item className="d-flex justify-content-between">
+                    <span>Giảm giá:</span>
+                    <span>{discount.toLocaleString("vi-VN")}₫</span>
+                  </ListGroup.Item>
+                )}
                 <ListGroup.Item className="d-flex justify-content-between fw-bold">
                   <span>Tổng cộng:</span>
                   <span className="text-primary">
@@ -285,7 +313,28 @@ const PaymentPage = () => {
                       }
                     />
                   </Form.Group>
-
+                  <Card className="mt-4 mb-4">
+                    <Card.Header className="bg-primary text-white">
+                      <h5 className="mb-0">Mã giảm giá</h5>
+                    </Card.Header>
+                    <Card.Body>
+                      <Form.Group controlId="paymentMethodSelect">
+                        <Form.Label>Chọn mã giảm giá</Form.Label>
+                        <Form.Select
+                          value={currentVoucher?.code || ""}
+                          onChange={(e) => handleVoucherChange(e)}
+                        >
+                          <option value="">-- Chọn mã giảm giá --</option>
+                          {vouchers.map((voucher) => (
+                            <option key={voucher.id} value={voucher.code}>
+                              {voucher.code}
+                            </option>
+                          ))}
+                        </Form.Select>
+                        <p>{currentVoucher?.description}</p>
+                      </Form.Group>
+                    </Card.Body>
+                  </Card>
                   <Card className="mt-4 mb-4">
                     <Card.Header className="bg-primary text-white">
                       <h5 className="mb-0">Phương thức thanh toán</h5>
