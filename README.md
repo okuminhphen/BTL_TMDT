@@ -1,6 +1,7 @@
 # BTL_TMDT
 
 npx sequelize-cli db:migrate
+
 npm i
 
 -tạo file .env
