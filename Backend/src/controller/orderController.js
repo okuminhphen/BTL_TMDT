@@ -1,8 +1,19 @@
 import orderService from "../service/orderService.js";
 const readFunc = async (req, res) => {
     try {
+        let data = await orderService.getAllOrders();
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            EM: "Error from controller",
+            EC: "-1",
+            DT: "",
+        });
     }
 };
 const createFunc = async (req, res) => {
@@ -25,11 +36,41 @@ const createFunc = async (req, res) => {
 };
 const updateFunc = async (req, res) => {
     try {
-    } catch (error) {}
+        let orderId = req.body.id;
+        let orderData = req.body;
+        let data = await orderService.updateOrder(orderId, orderData);
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "Error from controller",
+            EC: "-1",
+            DT: "",
+        });
+    }
 };
 const deleteFunc = async (req, res) => {
     try {
-    } catch (error) {}
+        let orderId = req.body.id;
+
+        let data = await orderService.deleteOrder(orderId);
+        return res.status(200).json({
+            EM: data.EM,
+            EC: data.EC,
+            DT: data.DT,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "Error from controller",
+            EC: "-1",
+            DT: "",
+        });
+    }
 };
 const readByUserIdFunc = async (req, res) => {
     try {

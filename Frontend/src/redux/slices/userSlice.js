@@ -3,8 +3,30 @@ import {
   loginUser,
   updateUserById,
   updatePasswordById,
+  fetchAllUsers,
 } from "../../service/userService";
 import { toast } from "react-toastify";
+
+// Async thunk để lấy danh sách người dùng
+export const fetchUsers = createAsyncThunk(
+  "user/fetchUsers",
+  async (_, thunkAPI) => {
+    try {
+      const response = await fetchAllUsers();
+      console.log("response", response.data); // Log toàn bộ response
+
+      if (response.data.EC === "0") {
+        // Kiểm tra dữ liệu trả về có hợp lệ không
+        console.log("users data:", response.data.DT);
+        return response.data.DT;
+      } else {
+        return thunkAPI.rejectWithValue(response.data.EM);
+      }
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Không thể kết nối đến server");
+    }
+  }
+);
 // Async thunk để đăng nhập người dùng
 export const loginByUser = createAsyncThunk(
   "user/login",
@@ -80,6 +102,7 @@ export const updatePasswordThunk = createAsyncThunk(
 const initialState = {
   currentUser: JSON.parse(sessionStorage.getItem("user")) || null,
   isAuthenticated: !!sessionStorage.getItem("user"),
+  users: [], // 👈 Thêm dòng này
   loading: false,
   error: null,
 };
@@ -101,6 +124,20 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     // Đảm bảo mỗi addCase đều nhận được một action type hợp lệ
     builder
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.users = action.payload;
+        console.log("Fetched users in reducer", action.payload);
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(loginByUser.pending, (state) => {
         state.loading = true;
         state.error = null;

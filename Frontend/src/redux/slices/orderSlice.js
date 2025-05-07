@@ -3,30 +3,70 @@ import {
   createOrder,
   updateOrderStatus,
   getOrdersByUserId,
+  fetchAllOrders,
+  deleteOrder,
 } from "../../service/orderService";
 
-// 📌 Lấy danh sách đơn hàng của người dùng
-// export const fetchOrders = createAsyncThunk(
-//   "orders/fetchOrders",
-//   async (_, { getState, rejectWithValue }) => {
-//     try {
-//       const userId = getState().user.currentUser?.userId;
-//       if (!userId) return rejectWithValue("Người dùng chưa đăng nhập!");
+// 📌 Lấy tất cả đơn hàng (Admin)
+export const fetchAllOrdersThunk = createAsyncThunk(
+  "order/fetchAllOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetchAllOrders(); // Thay đổi API để lấy tất cả đơn hàng
+      if (response.data.EC !== "0" || !response.data.DT) {
+        return rejectWithValue(response.data);
+      }
 
-//       const response = await fetchOrder(`${API_URL}?userId=${userId}`);
+      return response.data.DT;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi lấy tất cả đơn hàng!"
+      );
+    }
+  }
+);
 
-//       if (response.data?.EC === 0) {
-//         return response.data.DT;
-//       } else {
-//         return rejectWithValue(response.data?.EM || "Không thể lấy đơn hàng!");
-//       }
-//     } catch (error) {
-//       return rejectWithValue(
-//         error.response?.data?.message || "Lỗi khi lấy danh sách đơn hàng!"
-//       );
-//     }
-//   }
-// );
+// 📌 Sửa đơn hàng (Admin)
+export const updateAdminOrderStatusThunk = createAsyncThunk(
+  "order/updateAdminOrderStatus",
+  async ({ orderId, updatedData }, { rejectWithValue }) => {
+    try {
+      const response = await updateOrderStatus(orderId, updatedData);
+      if (response.data?.EC === "0") {
+        return response.data.DT;
+      } else {
+        return rejectWithValue(
+          response.data?.EM || "Không thể cập nhật đơn hàng!"
+        );
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi cập nhật đơn hàng!"
+      );
+    }
+  }
+);
+
+// 📌 Xóa đơn hàng (Admin)
+export const deleteAdminOrderThunk = createAsyncThunk(
+  "order/deleteAdminOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await deleteOrder(orderId); // Điều chỉnh URL API nếu cần
+      console.log(response.data.EM);
+      if (response.data?.EC === "0") {
+        return orderId; // Trả về ID để xóa khỏi Redux store
+      } else {
+        return rejectWithValue(response.data?.EM || "Không thể xóa đơn hàng!");
+      }
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Lỗi khi xóa đơn hàng!"
+      );
+    }
+  }
+);
+
 export const fetchOrdersUserThunk = createAsyncThunk(
   "order/fetchOrdersUser",
   async (_, { getState, rejectWithValue }) => {
@@ -124,6 +164,19 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // 📌 Lấy tất cả đơn hàng (Admin)
+      .addCase(fetchAllOrdersThunk.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAllOrdersThunk.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.orders = action.payload;
+      })
+      .addCase(fetchAllOrdersThunk.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+
       // 📌 Lấy danh sách đơn hàng người dùng
       .addCase(fetchOrdersUserThunk.pending, (state) => {
         state.status = "loading";
@@ -147,24 +200,48 @@ const orderSlice = createSlice({
       })
 
       // 📌 Cập nhật đơn hàng
-      // 📌 Cập nhật đơn hàng
       .addCase(updateOrderStatusThunk.fulfilled, (state, action) => {
-        const updatedOrder = action.payload; // Lấy đơn hàng đã cập nhật từ backend
+        const updatedOrder = action.payload;
         const index = state.orders.findIndex(
           (order) => order.id === updatedOrder.id
         );
-
         if (index !== -1) {
           state.orders[index] = updatedOrder; // Cập nhật đơn hàng trong danh sách
         } else {
           state.orders.push(updatedOrder); // Nếu chưa có, thêm vào danh sách
         }
       })
-
       .addCase(updateOrderStatusThunk.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      // 📌 Cập nhật đơn hàng (Admin)
+      .addCase(updateAdminOrderStatusThunk.fulfilled, (state, action) => {
+        const updatedOrder = action.payload;
+        const index = state.orders.findIndex(
+          (order) => order.id === updatedOrder.id
+        );
+        if (index !== -1) {
+          state.orders[index] = updatedOrder;
+        } else {
+          state.orders.push(updatedOrder);
+        }
+      })
+      .addCase(updateAdminOrderStatusThunk.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      // 📌 Xóa đơn hàng (Admin)
+      .addCase(deleteAdminOrderThunk.fulfilled, (state, action) => {
+        state.orders = state.orders.filter(
+          (order) => order.id !== action.payload
+        );
+      })
+      .addCase(deleteAdminOrderThunk.rejected, (state, action) => {
         state.error = action.payload;
       });
   },
 });
+
 export const { addOrderTemp } = orderSlice.actions;
 export default orderSlice.reducer;

@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Navbar, Nav, Container, Button, Badge } from "react-bootstrap";
+import {
+  Navbar,
+  Nav,
+  Container,
+  Button,
+  Badge,
+  Form,
+  InputGroup,
+} from "react-bootstrap";
 import "./Nav.scss";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { logoutUser } from "../../service/userService";
@@ -12,6 +20,8 @@ const Navigation = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const userId = JSON.parse(sessionStorage.getItem("user"))?.userId;
 
   useEffect(() => {
@@ -29,6 +39,7 @@ const Navigation = () => {
     document.addEventListener("click", closeDropdown);
     return () => document.removeEventListener("click", closeDropdown);
   }, []);
+
   const handleLogout = async () => {
     try {
       let response = await logoutUser();
@@ -48,6 +59,20 @@ const Navigation = () => {
   const toggleDropdown = (e) => {
     e.preventDefault();
     setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const toggleSearch = (e) => {
+    e.preventDefault();
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
   };
 
   return (
@@ -82,10 +107,33 @@ const Navigation = () => {
               </Button>
             </Nav>
             <div className="ms-3 d-flex align-items-center">
-              <NavLink to="#" className="nav-link text-dark mx-3">
-                <i className="fa-solid fa-magnifying-glass"></i>{" "}
-                {/* Thay vì fas fa-search */}
-              </NavLink>
+              <div className="search-container">
+                <NavLink
+                  to="#"
+                  className="nav-link text-dark mx-3"
+                  onClick={toggleSearch}
+                >
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                </NavLink>
+                {isSearchOpen && (
+                  <div className="search-dropdown">
+                    <Form onSubmit={handleSearch}>
+                      <InputGroup>
+                        <Form.Control
+                          type="text"
+                          placeholder="Tìm kiếm sản phẩm..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          autoFocus
+                        />
+                        <Button variant="outline-dark" type="submit">
+                          <i className="fa-solid fa-magnifying-glass"></i>
+                        </Button>
+                      </InputGroup>
+                    </Form>
+                  </div>
+                )}
+              </div>
               <div className="user-dropdown">
                 <NavLink
                   to="#"
@@ -126,8 +174,7 @@ const Navigation = () => {
                 to="/cart"
                 className="nav-link text-dark position-relative mx-3"
               >
-                <i className="fa-solid fa-bag-shopping"></i>{" "}
-                {/* Thay vì fas fa-shopping-bag */}
+                <i className="fa-solid fa-bag-shopping"></i>
                 <Badge
                   bg="danger"
                   className="position-absolute top-0 start-100 translate-middle"

@@ -3,6 +3,7 @@ import config from "config";
 import dateFormat from "dateformat";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import { getIO } from "../socket.js";
 dotenv.config();
 const readPaymentMethodsFunc = async (req, res) => {
     try {
@@ -153,8 +154,30 @@ const getPaymentReturnFunc = async (req, res) => {
         });
     }
 };
+const webhookFunc = async (req, res) => {
+    try {
+        const data = req.body;
+
+        console.log("📩 Webhook received:", data);
+
+        // 🔥 Gửi socket đến frontend
+        const io = getIO();
+        io.emit("payment-success", "success");
+
+        res.status(200).send("OK");
+    } catch (error) {
+        console.error("❌ Webhook error:", error);
+        return res.status(500).json({
+            EM: "Error from controller",
+            EC: "-1",
+            DT: "",
+        });
+    }
+};
+
 export default {
     readPaymentMethodsFunc,
     createPaymentUrlFunc,
     getPaymentReturnFunc,
+    webhookFunc,
 };

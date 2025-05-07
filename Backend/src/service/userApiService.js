@@ -98,8 +98,53 @@ const updatePasswordById = async (id, passwordData) => {
         };
     }
 };
+const deleteUser = async (id) => {
+    try {
+        const user = await db.User.findByPk(id);
+        if (!user) {
+            return {
+                EM: "User not found",
+                EC: 1,
+                DT: null,
+            };
+        }
+        await user.destroy();
+        return {
+            EM: "Delete user successfully",
+            EC: 0,
+            DT: null,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from server",
+            EC: 1,
+            DT: null,
+        };
+    }
+};
+const getAllUsers = async () => {
+    try {
+        const users = await db.User.findAll();
+        return {
+            EM: "Get all users successfully",
+            EC: 0,
+            DT: users,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from server",
+            EC: 1,
+            DT: null,
+        };
+    }
+};
+
 export default {
     getUserById,
     updateUserById,
     updatePasswordById,
+    deleteUser,
+    getAllUsers,
 };

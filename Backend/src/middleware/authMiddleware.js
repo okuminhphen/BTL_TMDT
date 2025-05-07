@@ -5,7 +5,6 @@ const SECRET_KEY = process.env.JWT_SECRET || "jwt"; // Dùng biến môi trườ
 
 // 1️⃣ Hàm tạo token khi đăng nhập thành công
 const generateToken = (user) => {
-    console.log("check generateToken", user);
     return jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
         SECRET_KEY,
@@ -15,9 +14,7 @@ const generateToken = (user) => {
 
 // 2️⃣ Middleware xác thực token từ cookies
 const verifyToken = (req, res, next) => {
-    console.log("Cookies received:", req.cookies);
     const token = req.cookies.token;
-    console.log("Token extracted:", token);
 
     if (!token) {
         return res

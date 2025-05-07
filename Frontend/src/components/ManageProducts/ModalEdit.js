@@ -216,7 +216,7 @@ const ModalEdit = (props) => {
                 <Form.Group className="mb-3">
                   <Form.Label>Mô tả</Form.Label>
                   <Form.Control
-                    type="text"
+                    as="textarea"
                     value={product.description || ""}
                     onChange={(e) => {
                       setProduct({ ...product, description: e.target.value });

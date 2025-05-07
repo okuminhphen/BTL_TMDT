@@ -58,19 +58,18 @@ const Cart = () => {
 
   const getProductImages = (images) => {
     if (!images) return [];
-    let parsedImages = [];
+
+    if (Array.isArray(images)) {
+      return images;
+    }
 
     try {
-      parsedImages = JSON.parse(images);
-      if (typeof parsedImages === "string") {
-        parsedImages = JSON.parse(parsedImages);
-      }
+      const parsed = JSON.parse(images);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Lỗi parse JSON:", error);
       return [];
     }
-
-    return Array.isArray(parsedImages) ? parsedImages : [];
   };
 
   const formatPrice = (price) => {

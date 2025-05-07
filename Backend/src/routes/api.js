@@ -9,6 +9,7 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 import paymentController from "../controller/paymentController.js";
 import voucherController from "../controller/voucherController.js";
 import userController from "../controller/userController.js";
+import reviewController from "../controller/reviewController.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -26,6 +27,12 @@ const initApiRouter = (app) => {
     router.post("/register", loginRegisterController.handleRegister);
     router.post("/login", loginRegisterController.handleLogin);
     router.post("/logout", loginRegisterController.handleLogout);
+    //review route
+    router.post("/review/add", reviewController.addReviewFunc);
+    router.get(
+        "/review/product/:productId",
+        reviewController.getReviewsByProductIdFunc
+    );
 
     // user route
     router.get("/user/read", userController.readFunc);
@@ -33,6 +40,7 @@ const initApiRouter = (app) => {
     router.put("/user/update/:userId", userController.updateFunc);
     router.delete("/user/delete", userController.deleteFunc);
     router.put("/user/update-password/:id", userController.updatePasswordFunc);
+    router.get("/user/read-all", userController.getAllUsersFunc);
     //product route
     router.get("/product/read", productController.readFunc);
     router.get("/size/read", productController.readSizeFunc);
@@ -63,7 +71,7 @@ const initApiRouter = (app) => {
     );
 
     //order route
-    router.get("/order/read", verifyToken, orderController.readFunc);
+    router.get("/order/read", orderController.readFunc);
     router.get(
         "/order/read/:userId",
         verifyToken,
@@ -94,7 +102,7 @@ const initApiRouter = (app) => {
         verifyToken,
         paymentController.getPaymentReturnFunc
     );
-
+    router.post("/webhook", paymentController.webhookFunc);
     router.get("/voucher/read", voucherController.readVoucherFunc);
     router.post("/voucher/check", voucherController.checkVoucherFunc);
 

@@ -8,6 +8,8 @@ import {
   Card,
   ListGroup,
   Badge,
+  Modal,
+  Image,
 } from "react-bootstrap";
 import "./PaymentPage.scss";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +17,7 @@ import { createOrderThunk, addOrderTemp } from "../../redux/slices/orderSlice";
 import { creatPayment, getPaymentMethods } from "../../service/paymentService";
 import { toast } from "react-toastify";
 import { getAllVouchers } from "../../service/voucherService";
+import { io } from "socket.io-client";
 const PaymentPage = () => {
   const defaultCustomerInfo = {
     name: "",
@@ -24,7 +27,7 @@ const PaymentPage = () => {
     message: "",
     paymentMethod: "cod",
   };
-
+  const [paymentStatus, setPaymentStatus] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [paymentMethods, setPaymentMethods] = useState([]);
   const { cartItems } = useSelector((state) => state.cart);
@@ -43,6 +46,54 @@ const PaymentPage = () => {
   const subtotal = calculateSubtotal();
   const total = subtotal + shippingFee - discount;
 
+  // Thêm state cho modal
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [orderId, setOrderId] = useState(null);
+  useEffect(() => {
+    // ✅ Nếu chạy local
+    // const socket = io("http://localhost:8080");
+
+    // ✅ Nếu chạy qua ngrok (đã dùng ngrok http 8080)
+    const socket = io("https://6a19-14-232-39-85.ngrok-free.app", {
+      transports: ["websocket"], // Bắt buộc với socket.io nếu bạn dùng ngrok
+    });
+
+    socket.on("connect", () => {
+      console.log("🟢 Connected to WebSocket server (socket.io)", socket.id);
+    });
+
+    socket.on("payment-success", (data) => {
+      // Lưu ý: sự kiện này phải giống sự kiện emit bên backend (vd: io.emit("paymentStatus", { ... }))
+      console.log("🟢 Payment success:", data);
+      if (data === "success") {
+        setPaymentStatus("success");
+        setShowQRModal(false);
+        toast.success("Thanh toán thành công!");
+
+        setTimeout(() => {
+          window.location.href = `/orders/user/${
+            JSON.parse(sessionStorage.getItem("user")).userId
+          }`;
+        }, 2000);
+      } else if (data.status === "failed") {
+        setPaymentStatus("failed");
+        setShowQRModal(false);
+        toast.error("Thanh toán thất bại, vui lòng thử lại!");
+      }
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Socket.IO connection error:", err);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔌 Disconnected from socket server");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [orderId]);
   useEffect(() => {
     fetchPaymentMethods();
     fetchAllVouchers();
@@ -54,12 +105,14 @@ const PaymentPage = () => {
       setPaymentMethods(response.data.DT);
     }
   };
+
   const fetchAllVouchers = async () => {
     let response = await getAllVouchers();
     if (response.data.EC === "0") {
       setVouchers(response.data.DT);
     }
   };
+
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
     setCustomerInfo({
@@ -67,6 +120,7 @@ const PaymentPage = () => {
       paymentMethod: e.target.value,
     });
   };
+
   const handleVoucherChange = (e) => {
     const selectedCode = e.target.value;
     const selectedVoucher = vouchers.find((v) => v.code === selectedCode);
@@ -80,6 +134,7 @@ const PaymentPage = () => {
 
     setCurrentVoucher(selectedVoucher || {});
   };
+
   const handlePayment = async (e) => {
     e.preventDefault();
     let paymentMethodId = paymentMethods.find(
@@ -98,8 +153,12 @@ const PaymentPage = () => {
 
     if (!result) {
       alert("Lỗi khi tạo đơn hàng!");
+      return;
     }
+
     let createdOrderId = result.DT;
+    setOrderId(createdOrderId);
+
     // ✅ Lưu tạm vào Redux
     dispatch(addOrderTemp(result));
 
@@ -123,6 +182,9 @@ const PaymentPage = () => {
       } catch (error) {
         console.error("Lỗi khi tạo URL thanh toán:", error);
       }
+    } else if (paymentMethod === "VIETTIN") {
+      // Hiển thị modal QR code thay vì redirect
+      setShowQRModal(true);
     } else {
       toast.success("Đơn hàng đã được đặt thành công!");
 
@@ -135,26 +197,37 @@ const PaymentPage = () => {
         }`; // Chuyển hướng về trang Đơn hàng
       }, 2000);
     }
-
-    // Xử lý gửi đơn hàng tới server
   };
 
   const getProductImages = (images) => {
     if (!images) return [];
-    let parsedImages = [];
+
+    if (Array.isArray(images)) {
+      return images;
+    }
 
     try {
-      parsedImages = JSON.parse(images);
-      if (typeof parsedImages === "string") {
-        parsedImages = JSON.parse(parsedImages);
-      }
+      const parsed = JSON.parse(images);
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.error("Lỗi parse JSON:", error);
       return [];
     }
-
-    return Array.isArray(parsedImages) ? parsedImages : [];
   };
+
+  // Tạo URL QR code với thông tin thanh toán
+  const generateQRUrl = () => {
+    const accountNumber = "106882709225";
+    const bank = "vietinbank";
+    const amount = total;
+    const addInfo = `Thanh toan don hang #${orderId}`;
+    const accountName = "HappyShop";
+
+    return `https://img.vietqr.io/image/${bank}-${accountNumber}-compact2.jpg?amount=${amount}&addInfo=${encodeURIComponent(
+      addInfo
+    )}&accountName=${encodeURIComponent(accountName)}`;
+  };
+
   return (
     <>
       <Container className="payment-page py-5">
@@ -384,7 +457,42 @@ const PaymentPage = () => {
           </Col>
         </Row>
       </Container>
-      );
+
+      {/* Modal QR code thanh toán VietinBank */}
+      <Modal
+        show={showQRModal}
+        onHide={() => setShowQRModal(false)}
+        centered
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Thanh toán qua VietinBank</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center">
+          <h5>Quét mã QR để thanh toán</h5>
+          <p>
+            Số tiền: <strong>{total.toLocaleString("vi-VN")}₫</strong>
+          </p>
+          <div className="qr-container my-4">
+            <Image
+              src={generateQRUrl()}
+              alt="QR Code thanh toán"
+              fluid
+              className="qr-image"
+              style={{ maxWidth: "350px" }}
+            />
+          </div>
+          <p className="text-muted">
+            Vui lòng sử dụng ứng dụng VietinBank iPay Mobile để quét mã QR và
+            hoàn tất thanh toán.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowQRModal(false)}>
+            Hủy
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

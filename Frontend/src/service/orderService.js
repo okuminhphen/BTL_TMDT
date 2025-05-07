@@ -15,4 +15,18 @@ const getOrder = (orderId) => {
 const getOrdersByUserId = (userId) => {
   return axios.get(`/order/read/${userId}`);
 };
-export { createOrder, getOrder, updateOrderStatus, getOrdersByUserId };
+
+const deleteOrder = (orderId) => {
+  return axios.delete(`/order/delete`, { data: { id: orderId } });
+};
+const fetchAllOrders = () => {
+  return axios.get("/order/read");
+};
+export {
+  createOrder,
+  getOrder,
+  updateOrderStatus,
+  getOrdersByUserId,
+  deleteOrder,
+  fetchAllOrders,
+};

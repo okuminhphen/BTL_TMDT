@@ -128,6 +128,24 @@ const updatePasswordFunc = async (req, res) => {
         });
     }
 };
+const getAllUsersFunc = async (req, res) => {
+    try {
+        let data = await userApiService.getAllUsers();
+        return res.status(200).json({
+            EM: data.EM, // error message
+            EC: data.EC, //error code
+            DT: data.DT, // Data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "error", // error message
+            EC: "-1", //error code
+            DT: "", // Date
+        });
+    }
+};
+
 export default {
     readFunc,
     createFunc,
@@ -135,4 +153,5 @@ export default {
     deleteFunc,
     getUserFunc,
     updatePasswordFunc,
+    getAllUsersFunc,
 };

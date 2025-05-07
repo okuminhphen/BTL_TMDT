@@ -7,6 +7,8 @@ import initApiRouter from "./routes/api.js";
 import bodyParser from "body-parser";
 import configCors from "./config/cors.js";
 import dotenv from "dotenv";
+import http from "http"; // 👈 THÊM DÒNG NÀY
+import { initSocket } from "./socket.js"; // 👈 THÊM socket
 
 dotenv.config();
 
@@ -17,20 +19,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cookieParser());
 
-// Cấu hình CORS
+// Tạo http server và khởi tạo socket
+const server = http.createServer(app);
+initSocket(server); // 👈 SOCKET.IO ĐƯỢC KHỞI TẠO Ở ĐÂY
+
+// Cấu hình
 configCors(app);
-
-// Cấu hình View Engine
 configViewEngine(app);
-
-// Cấu hình Body Parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Cấu hình thư mục chứa file tĩnh (uploads)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Khởi tạo API routes
 initApiRouter(app);
 
 const PORT = process.env.PORT || 8080;
@@ -40,7 +39,7 @@ app.use((req, res) => {
     return res.status(404).send("404 Not Found from Backend");
 });
 
-// Khởi chạy server
-app.listen(PORT, () => {
-    console.log(`>>> Server is running on http://localhost:${PORT}`);
+// 👇 CHỈNH DÒNG NÀY
+server.listen(PORT, () => {
+    console.log(`>>> ✅ Server is running on http://localhost:${PORT}`);
 });

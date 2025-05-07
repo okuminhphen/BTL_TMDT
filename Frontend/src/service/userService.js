@@ -11,8 +11,8 @@ const logoutUser = () => {
   return axios.post("/logout");
 };
 
-const fetchAllUsers = (page, limit) => {
-  return axios.get(`/users/read?page=${page}&limit=${limit}`);
+const fetchAllUsers = () => {
+  return axios.get(`/user/read`);
 };
 
 const deleteUser = (user) => {

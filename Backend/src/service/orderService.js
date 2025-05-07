@@ -76,6 +76,45 @@ const createOrder = async (orderData) => {
         };
     }
 };
+const getAllOrders = async () => {
+    try {
+        let orders = await db.Orders.findAll({
+            include: [
+                {
+                    model: db.OrdersDetails,
+                    as: "ordersDetails",
+                    attributes: [
+                        "id",
+                        "orderId",
+                        "productId",
+                        "productName",
+                        "productImage",
+                        "productSize",
+                        "quantity",
+                        "priceAtOrder",
+                        "totalPrice",
+                    ],
+                },
+                {
+                    model: db.Payment,
+                    as: "payment",
+                },
+            ],
+        });
+        return {
+            EM: "Get all orders successfully",
+            EC: "0",
+            DT: orders,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from service",
+            EC: "-1",
+            DT: "",
+        };
+    }
+};
 const getOrdersByUserId = async (userId) => {
     try {
         let orders = await db.Orders.findAll({
@@ -174,4 +213,48 @@ const updateOrderStatus = async (orderId, newStatus) => {
         };
     }
 };
-export default { createOrder, getOrdersByUserId, updateOrderStatus };
+const deleteOrder = async (orderId) => {
+    try {
+        let result = await db.Orders.destroy({ where: { id: orderId } });
+        return {
+            EM: "Delete order successfully",
+            EC: "0",
+            DT: result,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from service",
+            EC: "-1",
+            DT: "",
+        };
+    }
+};
+const updateOrder = async (orderId, orderData) => {
+    try {
+        let result = await db.Orders.update(orderData, {
+            where: { id: orderId },
+        });
+        return {
+            EM: "Update order successfully",
+            EC: "0",
+            DT: result,
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            EM: "Error from service",
+            EC: "-1",
+            DT: "",
+        };
+    }
+};
+
+export default {
+    createOrder,
+    getAllOrders,
+    getOrdersByUserId,
+    updateOrderStatus,
+    deleteOrder,
+    updateOrder,
+};
