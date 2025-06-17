@@ -1,0 +1,240 @@
+.admin-page {
+  min-height: 100vh;
+  background-color: #f0f2f5;
+
+  .sidebar {
+    background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    position: fixed;
+    padding: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+
+    &.collapsed {
+      width: 70px;
+      .sidebar-header h3 {
+        display: none;
+      }
+      .nav-link span {
+        display: none;
+      }
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .toggle-btn {
+        color: rgba(255, 255, 255, 0.7);
+        padding: 0;
+        &:hover {
+          color: #fff;
+        }
+      }
+    }
+
+    .nav {
+      padding: 20px 0;
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+
+        svg {
+          margin-right: 10px;
+          font-size: 1.2rem;
+        }
+
+        &:hover {
+          color: #fff;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        &.active {
+          color: #fff;
+          background-color: rgba(255, 255, 255, 0.15);
+          border-right: 3px solid #3498db;
+        }
+
+        &.logout {
+          margin-top: auto;
+          color: #e74c3c;
+          &:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+          }
+        }
+      }
+    }
+  }
+
+  .main-content {
+    margin-left: 16.666667%;
+    padding: 20px;
+    transition: all 0.3s ease;
+
+    .dashboard-content {
+      .page-title {
+        color: #2c3e50;
+        font-weight: 600;
+      }
+
+      .stat-card {
+        border: none;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+        background: #fff;
+
+        &:hover {
+          transform: translateY(-5px);
+        }
+
+        .stat-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 1.5rem;
+
+          &.bg-primary {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+          }
+          &.bg-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+          }
+          &.bg-warning {
+            background: linear-gradient(45deg, #f1c40f, #f39c12);
+          }
+          &.bg-info {
+            background: linear-gradient(45deg, #1abc9c, #16a085);
+          }
+        }
+
+        .stat-label {
+          color: #7f8c8d;
+          font-size: 0.875rem;
+          margin-bottom: 5px;
+        }
+
+        .stat-value {
+          color: #2c3e50;
+          font-weight: 600;
+          margin-bottom: 5px;
+        }
+      }
+
+      .card {
+        border: none;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        background: #fff;
+
+        .card-header {
+          background-color: #fff;
+          border-bottom: 1px solid #eee;
+          padding: 15px 20px;
+
+          h5 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin: 0;
+          }
+        }
+
+        .card-body {
+          padding: 20px;
+        }
+      }
+
+      .table {
+        th {
+          font-weight: 600;
+          color: #2c3e50;
+          background-color: #f8f9fa;
+          border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+          vertical-align: middle;
+          color: #7f8c8d;
+        }
+
+        .badge {
+          padding: 6px 10px;
+          font-weight: 500;
+
+          &.bg-success {
+            background-color: #2ecc71 !important;
+          }
+          &.bg-warning {
+            background-color: #f1c40f !important;
+            color: #2c3e50;
+          }
+          &.bg-danger {
+            background-color: #e74c3c !important;
+          }
+          &.bg-primary {
+            background-color: #3498db !important;
+          }
+        }
+      }
+
+      .btn-outline-primary {
+        border-color: #3498db;
+        color: #3498db;
+        &:hover {
+          background-color: #3498db;
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 991.98px) {
+  .admin-page {
+    .sidebar {
+      width: 70px;
+      .sidebar-header h3 {
+        display: none;
+      }
+      .nav-link span {
+        display: none;
+      }
+    }
+
+    .main-content {
+      margin-left: 70px;
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .admin-page {
+    .main-content {
+      margin-left: 0;
+      padding: 15px;
+    }
+
+    .stat-card {
+      margin-bottom: 15px;
+    }
+  }
+}

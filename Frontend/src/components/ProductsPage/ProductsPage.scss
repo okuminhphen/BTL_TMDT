@@ -1,0 +1,138 @@
+.products-page {
+  .custom-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #333;
+    position: relative;
+
+    &:after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: #333;
+      margin: 1rem auto;
+    }
+  }
+
+  .search-filter-section {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    .search-input {
+      border-radius: 25px 0 0 25px;
+      border: 1px solid #dee2e6;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+
+      &:focus {
+        box-shadow: none;
+        border-color: #333;
+      }
+    }
+
+    .search-button {
+      border-radius: 0 25px 25px 0;
+      padding: 0.75rem 1.5rem;
+      background: #333;
+      border: none;
+
+      &:hover {
+        background: #444;
+      }
+    }
+
+    .category-select {
+      border-radius: 25px;
+      padding: 0.75rem 1.5rem;
+      border: 1px solid #dee2e6;
+      font-size: 1rem;
+
+      &:focus {
+        box-shadow: none;
+        border-color: #333;
+      }
+    }
+  }
+
+  .results-count {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .product-card {
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      padding-top: 100%; // 1:1 Aspect ratio
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .card-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+      height: 2.4rem;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .card-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #dc3545;
+    }
+  }
+
+  .no-products {
+    text-align: center;
+    padding: 3rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin: 2rem 0;
+
+    h3 {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+  }
+}
